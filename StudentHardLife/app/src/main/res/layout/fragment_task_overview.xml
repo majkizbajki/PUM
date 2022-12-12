@@ -53,33 +53,22 @@
         android:id="@+id/addTaskButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="40dp"
         android:text="ADD TASK"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/loadPhotoButton" />
+        app:layout_constraintTop_toBottomOf="@+id/taskDescriptionEditText" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
-        android:layout_width="410dp"
-        android:layout_height="364dp"
+        android:layout_width="412dp"
+        android:layout_height="410dp"
         android:layout_marginTop="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/addTaskButton"
         tools:listitem="@layout/task_element" />
-
-    <Button
-        android:id="@+id/loadPhotoButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:text="LOAD PHOTO"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/taskDescriptionEditText" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
