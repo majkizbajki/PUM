@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "287193023304",
+    "firebase_url": "https://myfridge-65467-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "myfridge-65467",
+    "storage_bucket": "myfridge-65467.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:287193023304:android:4e2412aba3415c8aeee97d",
+        "android_client_info": {
+          "package_name": "com.example.myfridge"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "287193023304-q6j5q1s19ctmkfvac5ovhcfkef5q1987.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCtGJiSXy0BrfKBusehnO52IepRDaIVx4w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "287193023304-q6j5q1s19ctmkfvac5ovhcfkef5q1987.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
