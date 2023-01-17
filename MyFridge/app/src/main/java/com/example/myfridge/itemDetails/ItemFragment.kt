@@ -1,7 +1,6 @@
-package com.example.myfridge
+package com.example.myfridge.itemDetails
 
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -13,8 +12,10 @@ import android.widget.Toast
 import androidx.fragment.app.viewModels
 import androidx.navigation.NavDirections
 import androidx.navigation.Navigation
+import com.example.myfridge.R
 import com.example.myfridge.data.model.Product
 import com.example.myfridge.databinding.FragmentItemBinding
+import com.example.myfridge.fridge.FridgeViewModel
 import com.example.myfridge.shoppinglist.ShoppingListViewModel
 import com.example.myfridge.util.UiState
 import dagger.hilt.android.AndroidEntryPoint
@@ -22,8 +23,9 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class ItemFragment : Fragment() {
 
-    lateinit var binding: FragmentItemBinding
-    val viewModel: ShoppingListViewModel by viewModels()
+    private lateinit var binding: FragmentItemBinding
+    private val shoppingListViewModel: ShoppingListViewModel by viewModels()
+    private val fridgeViewModel: FridgeViewModel by viewModels()
     var isEdit: Boolean = false
     var objProduct: Product? = null
     private val unitsMap = mapOf("pcs" to 0, "l" to 1, "ml" to 2, "g" to 3, "kg" to 4)
@@ -35,7 +37,8 @@ class ItemFragment : Fragment() {
         binding = FragmentItemBinding.inflate(layoutInflater)
 
         val spinner: Spinner = binding.spinner
-        val spinnerAdapter = ArrayAdapter.createFromResource(requireActivity().applicationContext, R.array.units, android.R.layout.simple_spinner_item)
+        val spinnerAdapter = ArrayAdapter.createFromResource(requireActivity().applicationContext,
+            R.array.units, android.R.layout.simple_spinner_item)
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
 
         spinner.adapter = spinnerAdapter
@@ -71,13 +74,19 @@ class ItemFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        updateUI()
         if (arguments?.getString("navigation") == "shoppingList") {
-            updateUI()
             binding.saveItemButton.setOnClickListener {
                 if(isEdit){
-                    updateItemFormShoppingList()
+                    updateItemFromShoppingList()
                 } else {
                     addItemToShoppingList()
+                }
+            }
+        } else {
+            binding.saveItemButton.setOnClickListener {
+                if(isEdit){
+                    updateItemFromFridge()
                 }
             }
         }
@@ -85,7 +94,7 @@ class ItemFragment : Fragment() {
 
     private fun addItemToShoppingList(){
         if(validation()) {
-            viewModel.addProductToShoppingList(
+            shoppingListViewModel.addProductToShoppingList(
                 Product(
                     id = "",
                     name = binding.productNameInput.text.toString(),
@@ -96,7 +105,7 @@ class ItemFragment : Fragment() {
             val action = ItemFragmentDirections.actionItemFragmentToShopListFragment()
             Navigation.findNavController(binding.root).navigate(action)
         }
-        viewModel.addProductToShoppingList.observe(viewLifecycleOwner){ state ->
+        shoppingListViewModel.addProductToShoppingList.observe(viewLifecycleOwner){ state ->
             when(state){
                 is UiState.Loading -> {
                     binding.itemDetailsProgressBar.visibility = View.VISIBLE
@@ -113,9 +122,9 @@ class ItemFragment : Fragment() {
         }
     }
 
-    private fun updateItemFormShoppingList(){
+    private fun updateItemFromShoppingList(){
         if(validation()) {
-            viewModel.updateProductFromShoppingList(
+            shoppingListViewModel.updateProductFromShoppingList(
                 Product(
                     id = objProduct?.id ?: "",
                     name = binding.productNameInput.text.toString(),
@@ -126,7 +135,37 @@ class ItemFragment : Fragment() {
             val action = ItemFragmentDirections.actionItemFragmentToShopListFragment()
             Navigation.findNavController(binding.root).navigate(action)
         }
-        viewModel.updateProductFromShoppingList.observe(viewLifecycleOwner){ state ->
+        shoppingListViewModel.updateProductFromShoppingList.observe(viewLifecycleOwner){ state ->
+            when(state){
+                is UiState.Loading -> {
+                    binding.itemDetailsProgressBar.visibility = View.VISIBLE
+                }
+                is UiState.Failure -> {
+                    binding.itemDetailsProgressBar.visibility = View.INVISIBLE
+                    Toast.makeText(requireContext(), state.error, Toast.LENGTH_LONG).show()
+                }
+                is UiState.Success -> {
+                    binding.itemDetailsProgressBar.visibility = View.INVISIBLE
+                    Toast.makeText(requireContext(), state.data, Toast.LENGTH_LONG).show()
+                }
+            }
+        }
+    }
+
+    private fun updateItemFromFridge(){
+        if(validation()) {
+            fridgeViewModel.updateProductFromFridge(
+                Product(
+                    id = objProduct?.id ?: "",
+                    name = binding.productNameInput.text.toString(),
+                    amount = binding.amountInput.text.toString(),
+                    unit = binding.spinner.selectedItem.toString()
+                )
+            )
+            val action = ItemFragmentDirections.actionItemFragmentToFridgeFragment()
+            Navigation.findNavController(binding.root).navigate(action)
+        }
+        fridgeViewModel.updateProductFromFridge.observe(viewLifecycleOwner){ state ->
             when(state){
                 is UiState.Loading -> {
                     binding.itemDetailsProgressBar.visibility = View.VISIBLE
@@ -163,7 +202,19 @@ class ItemFragment : Fragment() {
                     }
                 }
             }
-            Log.d("TEST", "TEST")
+        } else {
+            type.let {
+                when(it){
+                    "edit" -> {
+                        isEdit = true
+                        objProduct = arguments?.getParcelable("product")
+                        binding.productNameInput.setText(objProduct?.name)
+                        binding.amountInput.setText(objProduct?.amount)
+                        binding.spinner.setSelection(unitsMap[objProduct?.unit]!!, true)
+                        binding.itemDetailsTitle.text = "Edit product from fridge"
+                    }
+                }
+            }
         }
     }
 
@@ -173,6 +224,12 @@ class ItemFragment : Fragment() {
             isValid = false
             Toast.makeText(requireContext(), "All fields are required", Toast.LENGTH_LONG).show()
         }
+        val amount: Int? = try { binding.amountInput.text.toString().toInt() } catch (e: NumberFormatException) { null }
+        if(amount == null || amount == 0){
+            isValid = false
+            Toast.makeText(requireContext(), "Wrong amount value", Toast.LENGTH_LONG).show()
+        }
+
         return isValid
     }
 

@@ -30,6 +30,10 @@ class ShoppingListViewModel @Inject constructor(
     val deleteProductFromShoppingList: LiveData<UiState<String>>
         get() = _deleteProductFromShoppingList
 
+    private val _addProductToFridge = MutableLiveData<UiState<String>>()
+    val addProductToFridge: LiveData<UiState<String>>
+        get() = _addProductToFridge
+
     fun getShoppingList() {
         _shoppingList.value = UiState.Loading
         repository.getShoppingList {
@@ -55,6 +59,13 @@ class ShoppingListViewModel @Inject constructor(
         _deleteProductFromShoppingList.value = UiState.Loading
         repository.deleteProductFromShoppingList(product) {
             _deleteProductFromShoppingList.value = it
+        }
+    }
+
+    fun addProductToFridge(product: Product){
+        _addProductToFridge.value = UiState.Loading
+        repository.addProductToFridge(product) {
+            _addProductToFridge.value = it
         }
     }
 

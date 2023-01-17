@@ -59,4 +59,16 @@
         android:visibility="invisible"
         android:indeterminateTint="@color/black" />
 
+    <TextView
+        android:id="@+id/empty_shopping_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Your shopping list is empty"
+        android:layout_gravity="center"
+        android:textAlignment="center"
+        android:textColor="@color/black"
+        android:fontFamily="monospace"
+        android:visibility="invisible"
+        android:textSize="16dp"/>
+
 </FrameLayout>

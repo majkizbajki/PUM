@@ -1,21 +1,22 @@
-package com.example.myfridge.shoppinglist
+package com.example.myfridge.fridge
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myfridge.data.model.Product
 import com.example.myfridge.databinding.ProductListItemBinding
 
-class ShoppingListAdapter(
-    val onDoneClicked: (Int, Product) -> Unit,
+class FridgeAdapter(
     val onEditClicked: (Int, Product) -> Unit,
     val onDeleteClicked: (Int, Product) -> Unit
-): RecyclerView.Adapter<ShoppingListAdapter.MyViewHolder>() {
+): RecyclerView.Adapter<FridgeAdapter.MyViewHolder>() {
 
     private var list: MutableList<Product> = arrayListOf()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         val itemView = ProductListItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        itemView.boughtProductButton.visibility = View.INVISIBLE
         return MyViewHolder(itemView)
     }
 
@@ -32,9 +33,6 @@ class ShoppingListAdapter(
         fun bind(item: Product){
             binding.productNameText.text = item.name
             binding.productAmountWithUnitText.text = "${item.amount} ${item.unit}"
-            binding.boughtProductButton.setOnClickListener {
-                onDoneClicked.invoke(absoluteAdapterPosition, item)
-            }
             binding.editProductButton.setOnClickListener {
                 onEditClicked.invoke(absoluteAdapterPosition, item)
             }

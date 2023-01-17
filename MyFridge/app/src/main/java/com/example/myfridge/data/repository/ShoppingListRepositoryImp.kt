@@ -55,7 +55,7 @@ class ShoppingListRepositoryImp(
             .set(product)
             .addOnSuccessListener {
                 result.invoke(
-                    UiState.Success("Product has been updated in shopping list")
+                    UiState.Success("Product from shopping list has been updated")
                 )
             }
             .addOnFailureListener {
@@ -75,6 +75,23 @@ class ShoppingListRepositoryImp(
             .addOnSuccessListener {
                 result.invoke(
                     UiState.Success("Product has been deleted from shopping list")
+                )
+            }
+            .addOnFailureListener {
+                result.invoke(
+                    UiState.Failure(it.localizedMessage)
+                )
+            }
+    }
+
+    override fun addProductToFridge(product: Product, result: (UiState<String>) -> Unit) {
+        val document = database.collection(FireStoreTables.FRIDGE).document()
+        product.id = document.id
+        document
+            .set(product)
+            .addOnSuccessListener {
+                result.invoke(
+                    UiState.Success("Product has been added to fridge")
                 )
             }
             .addOnFailureListener {

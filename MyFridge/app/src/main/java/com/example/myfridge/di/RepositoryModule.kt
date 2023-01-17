@@ -1,5 +1,7 @@
 package com.example.myfridge.di
 
+import com.example.myfridge.data.repository.FridgeRepository
+import com.example.myfridge.data.repository.FridgeRepositoryImp
 import com.example.myfridge.data.repository.ShoppingListRepository
 import com.example.myfridge.data.repository.ShoppingListRepositoryImp
 import com.google.firebase.database.FirebaseDatabase
@@ -20,5 +22,13 @@ object RepositoryModule {
         database: FirebaseFirestore
     ): ShoppingListRepository{
         return ShoppingListRepositoryImp(database)
+    }
+
+    @Provides
+    @Singleton
+    fun provideFridgeRepository(
+        database: FirebaseFirestore
+    ): FridgeRepository{
+        return FridgeRepositoryImp(database)
     }
 }
